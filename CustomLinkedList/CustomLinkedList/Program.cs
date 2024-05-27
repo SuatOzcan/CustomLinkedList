@@ -6,6 +6,8 @@ SinglyLinkedList<string> list = new SinglyLinkedList<string>();
 list.AddToFront("a");
 list.AddToFront("b");
 list.AddToFront("c");
+list.AddToEnd("d");
+list.Add("e");
 
 foreach (var item in list)
     Console.WriteLine(item);
@@ -28,12 +30,21 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
 
     public void Add(T? item)
     {
-        throw new NotImplementedException();
+        AddToEnd(item);
     }
 
     public void AddToEnd(T? item)
     {
-        throw new NotImplementedException();
+        Node<T> newNode = new Node<T>(item);
+        if (_head is null)
+            _head = newNode;
+        else
+        {
+            Node<T> tail = GetNodes().Last();
+            tail.Next = newNode;
+        }
+
+        ++_count;
     }
 
     public void AddToFront(T? item)
