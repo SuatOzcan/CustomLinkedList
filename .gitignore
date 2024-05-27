@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/CustomLinkedList/CustomLinkedList/Interface1.cs
+/CustomLinkedList/CustomLinkedList/Child.cs
+/CustomLinkedList/CustomLinkedList/Parent.cs
