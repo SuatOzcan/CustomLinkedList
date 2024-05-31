@@ -2,6 +2,7 @@
 
 using System.Collections;
 using System.Globalization;
+using System.Windows.Markup;
 
 SinglyLinkedList<string> list = new SinglyLinkedList<string>();
 list.AddToFront("a");
@@ -10,15 +11,36 @@ list.AddToFront("c");
 list.AddToEnd("d");
 list.Add("e");
 list.Remove("c");
+
 Console.WriteLine("Contains \"b\"? {0} ",list.Contains("b"));
 Console.WriteLine("Contains \"c\"? {0}", list.Contains("c"));
 Console.WriteLine("Contains \"QWE\" {0}",list.Contains("QWE"));
 //list.Clear();
 
+Console.WriteLine("Values in the collection are:");
 foreach (var item in list)
     Console.WriteLine(item);
+Console.WriteLine();
 
-Console.ReadKey();
+string[] arr = new string[10];
+
+list.CopyTo(arr, 0);
+
+Console.WriteLine("Values in the array are:");
+
+foreach (string item in arr)
+{ Console.WriteLine(item); }
+
+//var o = arr.Select(x =>
+//            {
+//                Console.WriteLine(x);
+//                return x;
+//            });
+//foreach (string item in o) { }
+
+Console.WriteLine("Press any key to close the application.");
+Console.ReadKey(true);
+
 public interface ILinkedList<T> : ICollection<T>
 {
     void AddToFront(T item);
@@ -49,7 +71,6 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
             Node<T> tail = GetNodes().Last();
             tail.Next = newNode;
         }
-
         ++_count;
     }
 
@@ -86,7 +107,19 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
     }
     public void CopyTo(T?[] array, int arrayIndex)
     {
-        throw new NotImplementedException();
+        if(array is null)
+            throw new ArgumentNullException(nameof(array));
+        if(arrayIndex < 0 || arrayIndex >= array.Length)
+            throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+        if (Count + arrayIndex > array.Length)
+        //if (GetNodes().Count() + arrayIndex > array.Length)
+            throw new ArgumentException("Array is not long enough to store the collection.");
+        foreach (Node<T> node in GetNodes())
+        {
+            if(array.Length >= GetNodes().Count())
+            array[arrayIndex] = node.Value;
+            ++arrayIndex;
+        }
     }
 
     public bool Remove(T? item)
@@ -110,7 +143,6 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
                 return true;
                 // We stop the iteration here.
             }
-
             predecessor = node;
         }
         return false;
