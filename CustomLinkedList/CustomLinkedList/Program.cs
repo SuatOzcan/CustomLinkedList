@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more 
 
 using System.Collections;
+using System.Globalization;
 
 SinglyLinkedList<string> list = new SinglyLinkedList<string>();
 list.AddToFront("a");
@@ -57,6 +58,7 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
 
     public void Clear()
     {
+        // Never use the GetEnumarator iteration, e.g. GetNodes(). It will be hard to figure out.
         Node<T>? current = _head;
         while(current != null)
         {
@@ -81,7 +83,29 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
 
     public bool Remove(T? item)
     {
-        throw new NotImplementedException();
+        Node<T>? predecessor = null;
+        // Although it is not a good idea to modify the collection during iteration with GetNodes(),
+        // since we stop the iteration when we alter the part, this is okay.
+        foreach (Node<T> node in GetNodes())
+        {
+            if ((node.Value is null && item is null) || (node.Value is not null && node.Value.Equals(item)))
+            {
+                if (predecessor is null)
+                {
+                    _head = node.Next;
+                }
+                else
+                {
+                    predecessor.Next = node.Next;
+                }
+                --_count;
+                return true;
+                // We stop the iteration here.
+            }
+
+            predecessor = node;
+        }
+        return false;
     }
     public IEnumerator<T?> GetEnumerator()
     {
