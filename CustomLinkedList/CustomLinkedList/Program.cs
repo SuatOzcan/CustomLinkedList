@@ -1,8 +1,6 @@
 ﻿// See https://aka.ms/new-console-template for more 
 
 using System.Collections;
-using System.Globalization;
-using System.Windows.Markup;
 
 SinglyLinkedList<string> list = new SinglyLinkedList<string>();
 list.AddToFront("a");
@@ -50,7 +48,8 @@ public interface ILinkedList<T> : ICollection<T>
 
 public class SinglyLinkedList<T> : ILinkedList<T?>
 {
-    private Node<T>? _head;
+    private Node? _head;
+    private Node? _tail;
     private int _count;
     public int Count => _count;
 
@@ -63,20 +62,21 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
 
     public void AddToEnd(T? item)
     {
-        Node<T> newNode = new Node<T>(item);
+        Node newNode = new Node(item);
         if (_head is null)
             _head = newNode;
         else
         {
-            Node<T> tail = GetNodes().Last();
-            tail.Next = newNode;
+            if(_tail is null)
+                _tail = GetNodes().Last();
+            _tail.Next = newNode;
         }
         ++_count;
     }
 
     public void AddToFront(T? item)
     {
-        Node<T> newHead = new Node<T>(item) { Next = _head };
+        Node newHead = new Node(item) { Next = _head };
         _head = newHead;
         ++_count;
     }
@@ -84,10 +84,10 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
     public void Clear()
     {
         // Never use the GetEnumarator iteration, e.g. GetNodes(). It will be hard to figure out.
-        Node<T>? current = _head;
+        Node? current = _head;
         while(current != null)
         {
-            Node<T>? temporary = current;
+            Node? temporary = current;
             current = current.Next;
             temporary.Next = null;
         }
@@ -114,7 +114,7 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
         if (Count + arrayIndex > array.Length)
         //if (GetNodes().Count() + arrayIndex > array.Length)
             throw new ArgumentException("Array is not long enough to store the collection.");
-        foreach (Node<T> node in GetNodes())
+        foreach (Node node in GetNodes())
         {
             if(array.Length >= GetNodes().Count())
             array[arrayIndex] = node.Value;
@@ -124,10 +124,10 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
 
     public bool Remove(T? item)
     {
-        Node<T>? predecessor = null;
+        Node? predecessor = null;
         // Although it is not a good idea to modify the collection during iteration with GetNodes(),
         // since we stop the iteration when we alter the part, this is okay.
-        foreach (Node<T> node in GetNodes())
+        foreach (Node node in GetNodes())
         {
             if ((node.Value is null && item is null) || (node.Value is not null && node.Value.Equals(item)))
             {
@@ -149,7 +149,7 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
     }
     public IEnumerator<T?> GetEnumerator()
     {
-        foreach (Node<T> node in GetNodes())
+        foreach (Node node in GetNodes())
             yield return node.Value;
     }
 
@@ -158,30 +158,32 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
         return GetEnumerator();
     }
 
-    private IEnumerable<Node<T>> GetNodes()
+    private IEnumerable<Node> GetNodes()
     {
         if (_head is null)
             yield break;
 
-        Node<T>? current = _head;
+        Node? current = _head;
         while(current is not null)
         {
             yield return current;
             current = current.Next;
         }
     }
-}
 
-public class Node<T>
-{
-    public T? Value { get; set; }
-    public Node<T>? Next { get; set; }
-
-    public Node(T? value)
+    private class Node
     {
-        Value = value;
-    }
+        public T? Value { get; set; }
+        public Node? Next { get; set; }
 
-    public override string ToString() =>
-     $"Value: {Value}, Next: {(Next is null ? "null" : Next.Value)}";
+        public Node(T? value)
+        {
+            Value = value;
+        }
+
+        public override string ToString() =>
+         $"Value: {Value}, Next: {(Next is null ? "null" : Next.Value)}";
+    }
 }
+
+
