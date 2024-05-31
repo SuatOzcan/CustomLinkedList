@@ -9,7 +9,11 @@ list.AddToFront("b");
 list.AddToFront("c");
 list.AddToEnd("d");
 list.Add("e");
-list.Clear();
+list.Remove("c");
+Console.WriteLine("Contains \"b\"? {0} ",list.Contains("b"));
+Console.WriteLine("Contains \"c\"? {0}", list.Contains("c"));
+Console.WriteLine("Contains \"QWE\" {0}",list.Contains("QWE"));
+//list.Clear();
 
 foreach (var item in list)
     Console.WriteLine(item);
@@ -73,9 +77,13 @@ public class SinglyLinkedList<T> : ILinkedList<T?>
 
     public bool Contains(T? item)
     {
-        throw new NotImplementedException();
-    }
+        if (item is null)
+            return GetNodes().Any(node => node.Value is null);
+        else
+            return GetNodes().Any(node => item.Equals(node.Value));
 
+        //return GetNodes().Any(node => node.Value.Equals(item)); // Gives a "Value may be null here." warning.
+    }
     public void CopyTo(T?[] array, int arrayIndex)
     {
         throw new NotImplementedException();
